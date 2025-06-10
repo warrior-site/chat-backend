@@ -15,7 +15,7 @@ const server = http.createServer(app)
 
 // Allow frontend origin (adjust if you deploy)
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin:  ['http://localhost:5173', 'https://chat-frontend-eight-xi.vercel.app/'],
   methods: ['GET', 'POST'],
 }))
 
@@ -23,7 +23,8 @@ app.use(cors({
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:5173',
-    methods: ['GET', 'POST']
+    methods: ['GET', 'POST'],
+    credentials: true
   }
 })
 
