@@ -18,7 +18,7 @@ const server = http.createServer(app)
 
 // Allow frontend origin (adjust if you deploy)
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://chat-frontend-eight-xi.vercel.app/'],
+  origin: ['http://localhost:5173', 'https://chat-frontend-eight-xi.vercel.app'],
   methods: ['GET', 'POST'],
   credentials: true // Allow cookies to be sent
 }))
