@@ -1,5 +1,5 @@
 // server/socket.js
-module.exports = function registerSocketEvents(io) {
+export default function registerSocketEvents(io) {
   io.on('connection', (socket) => {
     console.log(`🟢 New user connected: ${socket.id}`)
 
