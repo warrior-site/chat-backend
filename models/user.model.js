@@ -39,10 +39,18 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    isOnline: {
-        type: Boolean,
-        default: false
+    usageReason: {
+        type: String,
+        default: ''
     },
+    preferredLanguage: {
+        type: String,
+        default: 'en'
+    },
+    game:{
+        type: String,
+        default: ''
+    }
 
 },{timestamps: true});
 const User = mongoose.model('User', userSchema);

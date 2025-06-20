@@ -1,25 +1,36 @@
-// server/socket.js
+import Message from './models/message.model.js';
+
 export default function registerSocketEvents(io) {
   io.on('connection', (socket) => {
-    console.log(`🟢 New user connected: ${socket.id}`)
+    console.log(`🟢 New user connected: ${socket.id}`);
 
-    // Join event (optional)
     socket.on('join', (username) => {
-      console.log(`👤 ${username} joined the chat.`)
-      socket.broadcast.emit('user-joined', username)
-    })
+      console.log(`👤 ${username} joined the chat.`);
+      socket.broadcast.emit('user-joined', username);
+    });
 
-    // Handle incoming messages
-    socket.on('chat-message', (msg) => {
-      console.log(`📩 Message from ${msg.sender}: ${msg.text}`)
+    socket.on('chat-message', async (msg) => {
+      console.log(`📩 Message from ${msg.sender}: ${msg.text}`);
 
-      // Broadcast message to all clients (including sender)
-      io.emit('chat-message', msg)
-    })
+      try {
+        const newMessage = new Message({
+          sender: msg.userId, // should be a valid MongoDB ObjectId (string is fine)
+          content: msg.text,
+          timestamp: msg.timestamp || new Date(),
+        });
 
-    // Disconnect
+        await newMessage.save();
+
+        console.log('✅ Message saved to DB:', newMessage);
+      } catch (err) {
+        console.error('❌ Error saving message:', err.message);
+      }
+
+      io.emit('chat-message', msg); // Broadcast to all
+    });
+
     socket.on('disconnect', () => {
-      console.log(`🔴 User disconnected: ${socket.id}`)
-    })
-  })
+      console.log(`🔴 User disconnected: ${socket.id}`);
+    });
+  });
 }

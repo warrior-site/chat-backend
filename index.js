@@ -2,54 +2,53 @@
 import express from 'express';
 import http from 'http';
 import dotenv from 'dotenv';
-dotenv.config(); // Load environment variables
 import cookieParser from 'cookie-parser';
 import { Server } from 'socket.io';
 import cors from 'cors';
 
-import registerSocketEvents from './socket.js';
-import authController from './routes/auth.route.js';
 import connect from './db/db.js';
+import authController from './routes/auth.route.js';
+import userRoute from './routes/user.route.js';
+import registerSocketEvents from './socket.js';
+import messageRoutes from './routes/message.route.js';
 
+dotenv.config();
 
-// Create Express app and HTTP server
-const app = express()
-const server = http.createServer(app)
+const app = express();
+const server = http.createServer(app);
 
-// Allow frontend origin (adjust if you deploy)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://chat-frontend-eight-xi.vercel.app'
+];
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://chat-frontend-eight-xi.vercel.app'],
+  origin: allowedOrigins,
   methods: ['GET', 'POST'],
-  credentials: true // Allow cookies to be sent
-}))
+  credentials: true,
+}));
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
-app.use("/api/auth", authController)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use("/api/auth", authController);
+app.use("/api/user", userRoute);
+app.use("/api/messages", messageRoutes);
 
-
-
-
-
-
-
-
-// Create Socket.IO server
+// ✅ Create Socket.IO instance
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
-    credentials: true
-  }
-})
+    credentials: true,
+  },
+});
 
-// Register socket events from external file
-registerSocketEvents(io)
+registerSocketEvents(io);
 
-// Start server
-const PORT = process.env.PORT || 5000
+// ✅ Start server
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  connect() // Connect to MongoDB
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-})
+  connect();
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
