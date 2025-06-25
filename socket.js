@@ -14,19 +14,49 @@ export default function registerSocketEvents(io) {
 
       try {
         const newMessage = new Message({
-          sender: msg.userId, // should be a valid MongoDB ObjectId (string is fine)
+          sender: msg.sender,
           content: msg.text,
           timestamp: msg.timestamp || new Date(),
+          ...(msg.chatType === 'friend'
+            ? { receiver: msg.targetId }
+            : { group: msg.targetId }),
         });
 
         await newMessage.save();
-
-        console.log('✅ Message saved to DB:', newMessage);
+        console.log('✅ Message saved:', newMessage);
       } catch (err) {
         console.error('❌ Error saving message:', err.message);
       }
 
-      io.emit('chat-message', msg); // Broadcast to all
+      io.emit('chat-message', msg); // broadcast to all (you can limit this if needed)
+    });
+
+    socket.on('message-reaction', async ({ messageId, emoji, userId }) => {
+      try {
+        const message = await Message.findById(messageId);
+        if (!message) return;
+
+        message.reactions.forEach((r) => {
+          r.users = r.users.filter((uid) => uid.toString() !== userId);
+        });
+
+        const existing = message.reactions.find((r) => r.emoji === emoji);
+        if (existing) {
+          existing.users.push(userId);
+        } else {
+          message.reactions.push({ emoji, users: [userId] });
+        }
+
+        message.reactions = message.reactions.filter(r => r.users.length > 0);
+        await message.save();
+
+        io.emit('reaction-updated', {
+          messageId,
+          reactions: message.reactions,
+        });
+      } catch (err) {
+        console.error('❌ Error updating reaction:', err.message);
+      }
     });
 
     socket.on('disconnect', () => {
