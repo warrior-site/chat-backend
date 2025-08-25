@@ -8,23 +8,37 @@ import mongoose from "mongoose"
 export const profile = async (req, res) => {
   const { email, language, usageReason, game } = req.body;
 
-  if (!req.file) {
-    return res.status(400).json({ message: "No image file uploaded" });
-  }
+  let profilePicture;
+  let preferredLanguage;
+  let usageReasonValue;
+  let gameValue;
 
   try {
     // ✅ 1. Upload image to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path);
-    fs.unlinkSync(req.file.path); // Delete temp file
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      fs.unlinkSync(req.file.path); // Delete temp file
+      profilePicture = result.secure_url;
+    }
 
-    const imageUrl = result.secure_url;
+    if (language) {
+      preferredLanguage = language;
+    }
+
+    if (usageReason) {
+      usageReasonValue = usageReason;
+    }
+
+    if (game) {
+      gameValue = game;
+    }
 
     // ✅ 2. Prepare update object
     const updateData = {
-      preferredLanguage: language,
-      usageReason,
-      profilePicture: imageUrl,
-      ...(usageReason === "Gaming" && game ? { game } : {}), // Add game only if usageReason is Gaming
+      ...(preferredLanguage && { preferredLanguage }),
+      ...(usageReasonValue && { usageReason: usageReasonValue }),
+      ...(profilePicture && { profilePicture }),
+      ...(gameValue && { game: gameValue }),
     };
 
     // ✅ 3. Update user

@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "loadtest": "artillery run loadtest/chat-test.yaml",
+    "loadtest:report": "artillery run loadtest/chat-test.yaml --output result.json && artillery report result.json"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +27,7 @@
     "mongoose": "^8.15.2",
     "multer": "^2.0.1",
     "nodemailer": "^6.10.1",
+    "resend": "^6.0.0",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {

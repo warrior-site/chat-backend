@@ -14,28 +14,35 @@ export const sendVerificationEmail = async (email, token) => {
     html,
   };
 
+  console.log('Sending verification email to:', email);
+  console.log('Verification token:', token);
+  console.log('Mail options:', mailOptions);
+
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log('Verification email sent:', info.messageId);
   } catch (err) {
-    console.error('Email send error:', err);
+    console.error('Email send error (verification):', err);
     throw new Error('Failed to send verification email');
   }
 };
+
 export const sendWelcomeEmail = async (email) => {
   const mailOptions = {
     from: `"Chat App" <${process.env.GMAIL_USER}>`,
     to: email,
     subject: 'Welcome to Chat App',
-    // text: 'Thank you for verifying your email. Welcome to Chat App!',
-    html:WELCOME_EMAIL_TEMPLATE
+    html: WELCOME_EMAIL_TEMPLATE,
   };
+
+  console.log('Sending welcome email to:', email);
+  console.log('Mail options:', mailOptions);
 
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log('Welcome email sent:', info.messageId);
   } catch (err) {
-    console.error('Email send error:', err);
+    console.error('Email send error (welcome):', err);
     throw new Error('Failed to send welcome email');
   }
 };

@@ -10,11 +10,12 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
         </div>
         <p style="margin-top: 30px;">If you did not sign up for Chatify, you can ignore this message.</p>
         <p>— The Chatify Team</p>
+        <p>This is a test email sent using Resend’s development email — please ignore if not expected</p>
       </div>
     </body>
   </html>
 `;
-
+ 
 
 export const WELCOME_EMAIL_TEMPLATE = `
 <!DOCTYPE html>

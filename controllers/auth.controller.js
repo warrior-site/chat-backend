@@ -4,6 +4,7 @@ import { setCookies } from '../utils/setCookies.js';
 import User from '../models/user.model.js';
 // import { sendVerificationEmail, welcomeEmail } from '../mailtrap/email.js';
 import { sendVerificationEmail,sendWelcomeEmail  } from '../mailtrap/emailService.js';
+// import sendEmail from '../mailtrap/ResendEmailService.js';
 
 
 
@@ -48,7 +49,11 @@ export const register = async (req, res) => {
         await newUser.save();
         setCookies(res, newUser._id);
         // await sendVerificationEmail(newUser.email, verificationToken); // Send verification email
-        await sendVerificationEmail(newUser.email, verificationToken); // Send verification email
+        // console.log("Sending email to:", newUser.email);
+        // await sendEmail(newUser.email,verificationToken);
+        console.log('New user registered:', newUser.email);
+        // await sendVerificationEmail(newUser.email, verificationToken); // Send verification email
+        // console.log("email sent")
         res.status(201).json({
             message: 'User registered successfully', newUser: {
                 ...newUser._doc,
@@ -85,7 +90,7 @@ export const verifyEmail = async (req, res) => {
         await user.save();
 
         // await welcomeEmail(user.email); // sending welcome mail
-        await sendWelcomeEmail(user.email); // sending welcome mail
+        // await sendWelcomeEmail(user.email); // sending welcome mail
 
         console.log('User email verified successfully:', user.email);
 
